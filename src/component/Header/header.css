@@ -1,0 +1,42 @@
+body{
+    margin: 0;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 18px;
+}
+
+nav{
+    display: flex;
+    justify-content: center;
+    background: black;
+}
+
+nav a{
+    display: inline-block;
+    padding: 8px 8px;
+    color: #fff;
+    text-decoration: none;
+}
+
+nav a:hover{
+    background: rgb(77, 73, 73);
+}
+
+nav button{
+    border: none;
+    padding: 8px 8px;
+    color: white;
+    background: black;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+nav button:hover{
+    background: rgb(77, 73, 73);
+}
+
+.page-body{
+    height: 624px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

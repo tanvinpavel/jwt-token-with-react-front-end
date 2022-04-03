@@ -1,75 +1,35 @@
-import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
+import { Route, Routes } from "react-router-dom";
+import About from "./component/About/About";
+import Body from "./component/Body/Body";
+import Layout from "./component/Layout/Layout";
+import Login from "./component/Login/Login";
+import NotFound from "./component/NotFound/NotFound";
+import Order from "./component/Order/Order";
+import PersistenceLogin from "./component/PersistenceLogin/PersistenceLogin";
+import Product from "./component/Product/Product";
+import LoggedInChecker from "./utility/LoggedInChecker";
+import PrivateRoute from "./utility/PrivateRoute";
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [error, setError] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn', 'user']);
-
-  const inputname = useRef();
-  const inputpass = useRef();
-  // useEffect(()=>{
-  //   cookies('isLoggedIn', false)
-  // }, [])
-
-  const handleDatapass = () => {
-    const username = inputname.current.value;
-    const password = inputpass.current.value;
-
-    //login
-    axios.post(`http://localhost:9050/auth/login`, {
-      username, password
-    })
-      .then(res => {
-        setUser(res.data)
-        setCookie('user', res.data);
-        setCookie('isLoggedIn', true);
-      });
-  }
-
-  const deleteHandler = (id) => {
-    setError(false);
-    setSuccess(false);
-    axios.delete(`http://localhost:9050/delete/${id}`, {
-      headers: { Authorization: `Bearer ${cookies.user.accessToken}`}
-    })
-      .then(res => setSuccess(res))
-      .catch(err => setError(true))
-  }
-
-  const logoutHandler = () => {
-    setError(false);
-    setSuccess(false);
-    // console.log(cookies.user.accessToken, cookies.user.refreshToken);
-    axios.post(`http://localhost:9050/logout`, { token: cookies.user.refreshToken}, {
-      headers: { Authorization: `Bearer ${cookies.user.accessToken}`}
-    })
-      .then(res => {
-        removeCookie('isLoggedIn');
-        removeCookie('user');
-      })
-  }
-
   return (
-    <>
-      {
-        !cookies.isLoggedIn ? <div>
-          <input ref={inputname} type="text" placeholder="plese enter your name" />
-          <input ref={inputpass} type="number" placeholder="plese enter your pass" />
-          <button onClick={handleDatapass} >click</button>
-        </div> : <div>
-          <button onClick={()=>logoutHandler()}>Logout</button>
-          <h4>{`Welcome to the the ${cookies.user.role} dashboard ${cookies.user.username}`}</h4>
-          <button onClick={()=>deleteHandler(1)}>Delete pavel</button>
-          <button onClick={()=>deleteHandler(2)}>Delete tanvir</button>
+    <Routes>
+      <Route path='/' element={<Layout/>}>
+        <Route path='/' element={<Body/>}/>
 
-          {error && <h4>you are not allow to delete this user</h4>}
-          {success && <h4>{success.data}</h4>}
-        </div>
-      }
-    </>
+        <Route path="/login" element={<Login/>} />
+
+        <Route element={<PersistenceLogin/>}>
+          <Route element={<PrivateRoute/>}>
+            <Route path='/order' element={<Order/>} />
+            <Route path='/product' element={<Product/>} />
+            <Route path='/about' element={<About/>} />
+          </Route>
+        </Route>
+
+        {/* not found page */}
+        <Route path="*" element={<NotFound/>} />
+      </Route>
+    </Routes>
   )
 }
 
